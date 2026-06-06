@@ -1,0 +1,35 @@
+---
+- name: install apache
+  become: true
+  ansible.builtin.yum:
+    name: "httpd"
+    state: present
+
+- name: install git
+  become: true
+  ansible.builtin.yum:
+    name: "git"
+    state: present
+
+- name: clone a repo
+  become: true
+  ansible.builtin.git:
+    repo: https://github.com/<your-username>/tooling.git
+    dest: /var/www/html
+    force: yes
+
+- name: copy html content one level up
+  become: true
+  command: cp -r /var/www/html/html/ /var/www/
+
+- name: Start httpd service
+  become: true
+  ansible.builtin.service:
+    name: httpd
+    state: started
+
+- name: remove /var/www/html/html directory
+  become: true
+  ansible.builtin.file:
+    path: /var/www/html/html
+    state: absent
